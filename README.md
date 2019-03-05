@@ -17,6 +17,8 @@ selection.other()
   If called on a selection which resulted from selection.filter() call, retuns selection containing filtered out elements.
 selection.sort(compare)
   Sorts and reinserts elements into their parent elements according to compare function, whish should return zero, positive or negative value when called with element a datum, b datum, a selection, b selection. Compare defaults to ascending of datums. 
+selection.length()
+  Return number of elements in selection.
 
 selection.append(type)
   Append exectly one element of specified type to every element in selection. Type can be either string or React Component. Element will share it's parent's datum. Type can be specified as function.
