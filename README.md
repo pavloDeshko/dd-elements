@@ -2,8 +2,8 @@ A d3 style alternative to JSX to write React elements.
 
 UNDER DEVELOPMENT
 
-e(type)
-  Returns selection containing element of specified type.
+e(type[,datum])
+  Returns selection containing element of specified type. Optionaly binds datum to returned element.
 
 selection.parent()
   Returns selection of first element's parent.
@@ -17,13 +17,13 @@ selection.other()
   If called on a selection which resulted from selection.filter() call, retuns selection containing filtered out elements.
 selection.sort(compare)
   Sorts and reinserts elements into their parent elements according to compare function, whish should return zero, positive or negative value when called with element a datum, b datum, a selection, b selection. Compare defaults to ascending of datums. 
-selection.length()
+selection.size()
   Return number of elements in selection.
 
 selection.append(type)
   Append exectly one element of specified type to every element in selection. Type can be either string or React Component. Element will share it's parent's datum. Type can be specified as function.
 selection.append(type, data)
-  Appends data.length number of elements of specified type and bind correspondind data to them. If selection contains multiple elements, data should be specified as function, which will be called for every parent element with it's datum, current index and selection containing element as this.
+  Appends data.length number of elements of specified type and bind correspondind data to them. If selection contains multiple elements, data should be specified as function, which will be called for every parent element with it's datum, current index and selection containing element as this. 
 selecion.child(type,[data])
   Alias to selecion.append(). Semanticly should be used on React elements to add elements to props.children.
 selection.datum(value)
