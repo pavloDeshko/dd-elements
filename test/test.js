@@ -1,4 +1,5 @@
-const e = require("../index.js" ).element
+const dde = require("../index.js" )
+const e = dde.element
 const render = require('react-test-renderer').create
 const {isValidElement, createElement} = require('react')
 
@@ -8,6 +9,8 @@ test("Smoke test", ()=>{
 })
 
 test('Element',()=>{
+	expect(e).toBe(dde.e)
+	
 	let div = e('div').all()
 	let comp = e(TestComponent).all()
 	let nonValid = e('span')
@@ -21,12 +24,12 @@ test('Element',()=>{
 
 
 describe('Appends',()=>{
-	test('Append single',()=>{
+	test('Child',()=>{
 		let div = e('div')
-		div.append('div')
-		  .append('span')
+		div.child('div')
+		  .child('span')
 			.prop('datum',d=>d)
-		div.append(TestComponent)
+		div.child(TestComponent)
 		
 		let result = render(div.all())
 		
@@ -37,23 +40,37 @@ describe('Appends',()=>{
 		expect(result.children[0].children[0].type).toBe('span')
 	})
 
-	test('Append with bind',()=>{
+	test('Children',()=>{
 		let result = render(
 		  e('div')
-		  .append('span',[11,12,13])
+		  .children('span',[11,12,13])
 			  .prop('datum',d=>d)
 			  .all()
 		)
 		expect(result.children.length).toBe(3)
 		expect(result.children.map(ch=>ch.props[datum])).toMatchObject([11,12,13])
 	})
-    test('Invalid data',()=>{
-		expect(()=>e('div').append('span',42)).toThrow()
+	
+	test('Append() alias',()=>{
+	    let div = e('div')
+		e.append('div','datum')
+		e.append('span', [1,2,3])
+		  .prop('datum',d=>d)
+		e.append('input', ()=>[11,12])
+		
+		let result = render(div.all())
+		expect(result.children.length).toBe(6)
+		expect(result.children[1].props['datum']).toBe('datum')
 	})
+	
+    test('Invalid data',()=>{
+		expect(()=>e('div').children('span',42)).toThrow()
+	})
+	
 	test('Multiple groups bind',()=>{
 		let result = render(e('div')
-		  .append('div',new Array(3))
-			.append('span',(d,i)=>[i*10+1,i*10+2,i*10+3])
+		  .children('div',new Array(3))
+			.children('span',(d,i)=>[i*10+1,i*10+2,i*10+3])
 			  .prop('datum',d=>d)
 			  .all()
 		)
@@ -68,13 +85,13 @@ describe('Datum operations',()=>{
 		let div = e('div')
 		div.datum(d)
 		  .prop(datum,d=>d)
-		  .append('span')//should be changed
+		  .child('span')//should be changed
 			 .datum('changed_datum')
 			 .prop(datum,d=>d)
-		div.append('span')//should be selected from parent's
+		div.child('span')//should be selected from parent's
 			   .datum(d=>d[a])
 			   .prop(datum,d=>d)
-		div.append('span')//should inherit
+		div.child('span')//should inherit
 			   .prop(datum,d=>d)
 			   
 		let result = render(div.all())
@@ -95,7 +112,7 @@ describe('Modifying',()={
 	extendExpect()
 	test('Modify elements',()=>{
 		let div = e('div')
-		let spans =  div.append('span',new Array(3))
+		let spans =  div.children('span',new Array(3))
 		
 		modify(div)
 		modify(spans)
@@ -111,7 +128,7 @@ describe('Modifying',()={
 		
 		let div = e('div')
 		  .datum(root_datum)
-		let spans =  div.append('span', nodes_datum)
+		let spans =  div.children('span', nodes_datum)
 		
 		modifyWithDatum(div)
 		modifyWithDatum(spans)
@@ -124,7 +141,7 @@ describe('Modifying',()={
 
 	test('Change type', ()=>{
 	  let div = e('div')
-	  let spans =  div.append('span',new Array(3))
+	  let spans =  div.children('span',new Array(3))
 	  
 	  div.type('span')
 	  spans.type('div')
@@ -136,8 +153,8 @@ describe('Modifying',()={
 	})
     
 	test('Tag vs Component equality',()=>{
-		let div = modify(e('div').append('span',new Array(3)))
-		let comp = modify(e(TestComponent).append('span',new Array(3)))
+		let div = modify(e('div').children('span',new Array(3)))
+		let comp = modify(e(TestComponent).children('span',new Array(3)))
 		
 		let result = [render(div.all()),render(comp.all())].forEach(r=>{delete r.type})//clearing type
 		expect(result[1]).toEqual(result[2])
@@ -148,12 +165,12 @@ describe('Selection operations',()={
 	test('Size',()=>{
 		let div = e('div')
 		expect(div.size()).toBe(1)
-	    expect(div.append('span',[1,2,3]).size()).toBe(3)
+	    expect(div.children('span',[1,2,3]).size()).toBe(3)
 	})
 	
 	test('Parent and children',()=>{
 	   let div = e('div')
-	   let spans =  div.append('span',[1,2,3])
+	   let spans =  div.children('span',[1,2,3])
 	   
 	   expect(div.children().size()).toBe(3)
 	   expect(spans.parent().type()).toBe('div')
@@ -161,7 +178,7 @@ describe('Selection operations',()={
 
 	test('Filter and Merge',()=>{
 	   let div = e('div')
-	   let spans =  div.append('span',[1,2,3])
+	   let spans =  div.children('span',[1,2,3])
 	   
 	   let filtered = spans.filter((d,i)=>d>=2)
 	   let other = filtered.other()
@@ -173,7 +190,7 @@ describe('Selection operations',()={
 
 	test('Sort',()=>{
 	   let spans =  e('div')
-		 .append('span',[2,1,3])
+		 .children('span',[2,1,3])
 		 .attr('datum',d=>d)
 		 .attr('i',_,i=>i)
 		 
@@ -188,15 +205,18 @@ describe('Selection operations',()={
 	   expect(result.children.map(ch=>props.i)).toMatchObject([2,0,1])
 	})
 })
+
+test('Wrapper',()=>{
+	let component = jest.fn(props=>props.e?props.e('div') : e('div'))
+	let wrapped = dde.wrap(component)
+	let withKey = dde.wrap(component,'e')
+	
+	expect(isValidElement(wrapped({a:1,b:2}))).toBe(true)
+	expect(component.mock.calls[0][0]).toMatchObject({a:1,b:2})
+	expect(isValidElement(withKey())).toBe(true)
+})
  
 //utils
-function divSpan(data,datum){
-	let div = e('div',(datum||undefined))
-	return {
-		div,
-		span: div.append('span',(data||undefined))
-	}
-}
 
 function TestComponent(props){
 	return createElement('div',{},props.children)
@@ -266,6 +286,7 @@ function extendExpect(){
 		expect(el.props.className).toContain('class_'+datum)
 		expect(el.props.style.width).toBe('style_'+d)
 		expect(el.props.key_mod).toBe('element_key_mod')
+		
 		return {pass:true, message:'All attributes match'}
 	  }catch(e){
 		return {pass:false, message:e.message}

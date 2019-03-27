@@ -4,7 +4,8 @@ UNDER DEVELOPMENT
 
 e(type[,datum])
   Returns selection containing element of specified type. Optionaly binds datum to returned element.
-
+element()
+  Alias to e()
 selection.parent()
   Returns selection of first element's parent.
 selection.children()
@@ -20,12 +21,12 @@ selection.sort(compare)
 selection.size()
   Return number of elements in selection.
 
-selection.append(type)
-  Append exectly one element of specified type to every element in selection. Type can be either string or React Component. Element will share it's parent's datum. Type can be specified as function.
-selection.append(type, data)
+selection.child(type)
+  Append exectly one element of specified type to every element in selection. Type can be either string or React Component. Element will share its parent's datum. Type can be specified as function.
+selection.children(type[, data])
   Appends data.length number of elements of specified type and bind correspondind data to them. If selection contains multiple elements, data should be specified as function, which will be called for every parent element with it's datum, current index and selection containing element as this. 
-selecion.child(type,[data])
-  Alias to selecion.append(). Semanticly should be used on React elements to add elements to props.children.
+selecion.append(type[, data])
+  Acts as selecion.children() if passed an array (or function which returns array) as data. Otherwise acts like selecion.child()
 selection.datum(value)
   Manualy binds or rebinds datums of selected elements. If value is specified as function, it will be called with element's current datum, current index and selection containing current element as this.
 
@@ -43,3 +44,7 @@ selection.style(name,value)
 
 selection.all()
   Converts the whole tree to which selected elements belong to valid React elements.
+  
+wrap(function[, key])
+  Wraps functional component or render function, so selection can be returned without all() call. If key is specified element() function inside props object under this key.
+
