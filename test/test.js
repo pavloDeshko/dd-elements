@@ -1,6 +1,7 @@
 const dde = require("../index.js" )
 const e = dde.element
-const render = require('react-test-renderer').create
+const create = require('react-test-renderer').create
+const render = function(el){return create(el).root}
 const {isValidElement, createElement} = require('react')
 
 
@@ -9,7 +10,7 @@ test("Smoke test", ()=>{
 })
 
 test('Element',()=>{
-	expect(e).toBe(dde.e)
+	expect(e).toBe(dde.element)
 	
 	let div = e('div').all()
 	let comp = e(TestComponent).all()
@@ -40,27 +41,29 @@ describe('Appends',()=>{
 		expect(result.children[0].children[0].type).toBe('span')
 	})
 
-	test('Children',()=>{
+	test('Children',()=>{ 
 		let result = render(
-		  e('div')
-		  .children('span',[11,12,13])
-			  .prop('datum',d=>d)
-			  .all()
+		         e('div')
+		        .children('span',[11,12,13])
+			    .prop('datum',d=>d)
+			    .all()
 		)
+		expect(4)
 		expect(result.children.length).toBe(3)
-		expect(result.children.map(ch=>ch.props[datum])).toMatchObject([11,12,13])
+		expect(result.children.map(ch=>ch.props['datum'])).toMatchObject([11,12,13])
 	})
 	
 	test('Append() alias',()=>{
 	    let div = e('div')
-		e.append('div','datum')
-		e.append('span', [1,2,3])
+		div.append('div','datum')
 		  .prop('datum',d=>d)
-		e.append('input', ()=>[11,12])
+		div.append('span', [1,2,3])
+		  .prop('datum',d=>d)
+		div.append('input', ()=>[11,12])
 		
 		let result = render(div.all())
 		expect(result.children.length).toBe(6)
-		expect(result.children[1].props['datum']).toBe('datum')
+		expect(result.children[0].props['datum']).toBe('datum')
 	})
 	
     test('Invalid data',()=>{
@@ -69,14 +72,19 @@ describe('Appends',()=>{
 	
 	test('Multiple groups bind',()=>{
 		let result = render(e('div')
-		  .children('div',new Array(3))
+		  .children('div',[1,2,3])
 			.children('span',(d,i)=>[i*10+1,i*10+2,i*10+3])
 			  .prop('datum',d=>d)
 			  .all()
 		)
-		expect(result.children[2].children.map(span=>span.props[datum])).toMatchObject([21,22,23])
+		expect(3)
+		expect(result.children[2].children.map(span=>span.props['datum'])).toMatchObject([21,22,23])
 	})
-
+    
+	test('Empty data array and empty selection all()',()=>{
+		let result = render(e('div').children('span',[]).all())
+		expect(result.children.length).toBe(0)
+	})
 })
 
 describe('Datum operations',()=>{
@@ -84,31 +92,31 @@ describe('Datum operations',()=>{
 		let d = {a:1,b:2}
 		let div = e('div')
 		div.datum(d)
-		  .prop(datum,d=>d)
+		  .prop('datum',d=>d)
 		  .child('span')//should be changed
 			 .datum('changed_datum')
-			 .prop(datum,d=>d)
+			 .prop('datum',d=>d)
 		div.child('span')//should be selected from parent's
-			   .datum(d=>d[a])
-			   .prop(datum,d=>d)
+			   .datum(d=>d['a'])
+			   .prop('datum',d=>d)
 		div.child('span')//should inherit
-			   .prop(datum,d=>d)
+			   .prop('datum',d=>d)
 			   
 		let result = render(div.all())
 		
-		expect(result.porps[datum]).toMatchObject(d)
-		expect(result.children[0].props[datum]).toBe('changed_datum')
-		expect(result.children[1].props[datum]).toBe(d[a])
-		expect(result.children[2].props[datum]).toMatchObject(d)
+		expect(result.props['datum']).toMatchObject(d)
+		expect(result.children[0].props['datum']).toBe('changed_datum')
+		expect(result.children[1].props['datum']).toBe(d['a'])
+		expect(result.children[2].props['datum']).toMatchObject(d)
 	})
 	
 	
-	test('Element() datum, and datum value'),()=>{
-		expect(e.('div','datum').datum()).toBe('datum')
+	test('Element() datum, and datum value',()=>{
+		expect(e('div','datum').datum()).toBe('datum')
 	})
 })
 
-describe('Modifying',()={
+describe('Modifying',()=>{
 	extendExpect()
 	test('Modify elements',()=>{
 		let div = e('div')
@@ -118,6 +126,7 @@ describe('Modifying',()={
 		modify(spans)
 		
 		let result = render(div.all())
+		expect(4)
 		expect(result).toBeModified()
 		result.children.forEach(ch=>expect(ch).toBeModified())
 	})
@@ -134,6 +143,7 @@ describe('Modifying',()={
 		modifyWithDatum(spans)
 		
 		let result = render(div.all())
+		expect(4)
 		expect(result).toBeModifiedWithDatum(root_datum,0)
 		result.children.forEach((ch,i)=>expect(ch).toBeModifiedWithDatum(nodes_datum[i],i))
 
@@ -141,27 +151,28 @@ describe('Modifying',()={
 
 	test('Change type', ()=>{
 	  let div = e('div')
-	  let spans =  div.children('span',new Array(3))
-	  
+	  let spans =  div.children('span',[1,2,3])
 	  div.type('span')
 	  spans.type('div')
 	  expect(div.type()).toBe('span')
 	  
 	  let result = render(div.all())
+	  expect(4)
 	  expect(result.type).toBe('span')
 	  result.children.forEach(ch=>expect(ch.type).toBe('div'))
 	})
     
 	test('Tag vs Component equality',()=>{
-		let div = modify(e('div').children('span',new Array(3)))
-		let comp = modify(e(TestComponent).children('span',new Array(3)))
+		let div = e('div')
+		modify(div.child('span'))
+		modify(div.child(TestComponent))
 		
-		let result = [render(div.all()),render(comp.all())].forEach(r=>{delete r.type})//clearing type
-		expect(result[1]).toEqual(result[2])
-})
+	    let props = render(div.all()).children.map(ch=>ch.props)
+		expect(props[0]).toEqual(props[1])
+    })
 })
 
-describe('Selection operations',()={
+describe('Selection operations',()=>{
 	test('Size',()=>{
 		let div = e('div')
 		expect(div.size()).toBe(1)
@@ -176,7 +187,7 @@ describe('Selection operations',()={
 	   expect(spans.parent().type()).toBe('div')
 	})
 
-	test('Filter and Merge',()=>{
+	test('Filter, Other and Merge',()=>{
 	   let div = e('div')
 	   let spans =  div.children('span',[1,2,3])
 	   
@@ -188,11 +199,11 @@ describe('Selection operations',()={
 	   expect(other.merge(filtered).size()).toBe(3)
 	})
 
-	test('Sort',()=>{
+	test.skip('Sort',()=>{
 	   let spans =  e('div')
 		 .children('span',[2,1,3])
 		 .attr('datum',d=>d)
-		 .attr('i',_,i=>i)
+		 .attr('i',i=>i)
 		 
 	   spans.sort()
 	   expect(spans.datum()).toBe(1)
@@ -213,7 +224,9 @@ test('Wrapper',()=>{
 	
 	expect(isValidElement(wrapped({a:1,b:2}))).toBe(true)
 	expect(component.mock.calls[0][0]).toMatchObject({a:1,b:2})
-	expect(isValidElement(withKey())).toBe(true)
+	
+	expect(isValidElement(withKey({a:1,b:2}))).toBe(true)
+	expect(component.mock.calls[1][0]).toMatchObject({a:1,b:2,e:expect.any(Function)})
 })
  
 //utils
@@ -223,16 +236,19 @@ function TestComponent(props){
 }
 
 function modifyWithDatum(selection){
-	selection.attr('datum', d=>d)
+	selection
+	  .attr('datum', d=>d)
 	  .prop('height', (_,i)=>i)
       .classed(d=>'class_'+d)
 	  .style('width',d=>'style_'+d)
-      .attr('key_mod',function(){return this.attr('key')+'_mod'})
+	return selection
 }
 
 function modify(selection){
-	selection.attr('key', 'bla')
-	  .attr('key', 'element_key')
+	selection
+	  .attr('attribute', 'bla')
+	  .attr('attribute', 'element_attr')
+	  .attr('mod', (_,__,that)=>that.attr('attribute')+'_mod')
 	  .attr('a','link')
 	
 	  .attr('disabled',true)
@@ -249,6 +265,7 @@ function modify(selection){
 	  .style('color','Red')
 	  .style('color','Blue')
       .style('float','left')
+	return selection
 }
 
 function extendExpect(){
@@ -258,7 +275,8 @@ function extendExpect(){
 			var props = el.props
 			
 			expect(props).toMatchObject({
-				key:'element_key',
+				attribute:'element_attr',
+				mod:'element_attr_mod',
 				a:'link',
 				disabled:true,
 				prop:'element_prop'
@@ -284,12 +302,11 @@ function extendExpect(){
 		expect(el.props.datum).toBe(datum)
 		expect(el.props.height).toBe(i)
 		expect(el.props.className).toContain('class_'+datum)
-		expect(el.props.style.width).toBe('style_'+d)
-		expect(el.props.key_mod).toBe('element_key_mod')
+		expect(el.props.style.width).toBe('style_'+datum)
 		
-		return {pass:true, message:'All attributes match'}
+		return {pass:true, message:()=>'All attributes match'}
 	  }catch(e){
-		return {pass:false, message:e.message}
+		return {pass:false, message:()=>e.message}
 	  }
 	}
 

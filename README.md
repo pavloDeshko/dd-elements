@@ -6,14 +6,13 @@ A d3 style alternative to JSX to write React elements.
   Returns selection containing element of specified type. Optionaly binds datum to returned element.
 #### element()
   Alias to e()
+  
 #### selection.parent()
   Returns selection of first element's parent.
-#### selection.children()
-  Returns selection of elements' children.
 #### selection.merge(other)
   Returns new selection resulted from merging.
 #### selection.filter(filter)
-  Filters elements in selection. Filter must be specified as function which will be called with element's current datum, current index and selection containing current element as this.
+  Filters elements in selection. Filter must be specified as function which will be called with element's current datum, current index and selection containing current element.
 #### selection.other()
   If called on a selection which resulted from selection.filter() call, retuns selection containing filtered out elements.
 #### selection.sort(compare)
@@ -21,20 +20,21 @@ A d3 style alternative to JSX to write React elements.
 #### selection.size()
   Return number of elements in selection.
 
-#### selection.child(type)
+#### selection.child(type[, datum])
   Append exectly one element of specified type to every element in selection. Type can be either string or React Component. Element will share its parent's datum. Type can be specified as function.
 #### selection.children(type[, data])
-  Appends data.length number of elements of specified type and bind correspondind data to them. If selection contains multiple elements, data should be specified as function, which will be called for every parent element with it's datum, current index and selection containing element as this. 
+  Appends data.length number of elements of specified type and bind correspondind data to them. If selection contains multiple elements, data should be specified as function, which will be called for every parent element with it's datum, current index and selection containing element.
+  If called with no arguments returns selection of elements' children.
 #### selecion.append(type[, data])
   Acts as selecion.children() if passed an array (or function which returns array) as data. Otherwise acts like selecion.child()
 #### selection.datum(value)
-  Manualy binds or rebinds datums of selected elements. If value is specified as function, it will be called with element's current datum, current index and selection containing current element as this.
+  Manualy binds or rebinds datums of selected elements. If value is specified as function, it will be called with element's current datum, current index and selection containing current element.
 
 
 #### selection.type(value)
   Returns type of first element in selection or changes it's type.
 #### selection.attr(name,value)
-  Sets atribute or prop to selected elements. If value is specified as function, it will be called with element's datum, current index and selection containing element as this. If value is not specified returns atribute value of the first element in selection.
+  Sets atribute or prop to selected elements. If value is specified as function, it will be called with element's datum, current index and selection containing element. If value is not specified returns atribute value of the first element in selection.
 #### selection.prop(name,value)
   Alias to selection.attr(). Semanticly should be used with React Elements.
 #### selection.classed(names,value=true)

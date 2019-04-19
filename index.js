@@ -1,1 +1,1 @@
-module.exports.element =  require('./lib/dd-elements.js')
+module.exports =  require('./lib/dd-elements.js')
