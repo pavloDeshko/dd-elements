@@ -8,7 +8,7 @@ A d3 style alternative to JSX to write React elements.
   Alias to element()
   
 #### selection.parents()
-  Returns selection of element's parents.
+  Returns selection of elements' parents.
 #### selection.merge(other)
   Returns new selection resulted from merging two selections.
 #### selection.filter(filter)
@@ -16,7 +16,7 @@ A d3 style alternative to JSX to write React elements.
 #### selection.other()
   If called on a selection, which resulted from selection.filter() call, retuns selection containing filtered out elements.
 #### selection.sort(compare)
-  Sorts and reinserts elements into their parent elements according to compare function, whish should return zero, positive or negative value when called with element a datum, b datum, a selection, b selection. Compare defaults to ascending of datums. 
+  Sorts and reinserts elements into their parent elements according to compare function, whish should return zero, positive or negative value when called with element's a datum, b datum, a selection, b selection. Compare defaults to ascending of datums. Returns new selection. Note that order of elements in original selecion may differ from new positions.
 #### selection.size()
   Return number of elements in selection.
 

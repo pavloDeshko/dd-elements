@@ -1,6 +1,6 @@
 {
   "name": "dd-elements",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Data-Driver React Elements",
   "main": "index.js",
   "scripts": {
