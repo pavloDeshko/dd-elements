@@ -170,6 +170,18 @@ describe('Modifying',()=>{
 	    let props = render(div.all()).children.map(ch=>ch.props)
 		expect(props[0]).toEqual(props[1])
     })
+	
+	test('Text',()=>{
+		
+		let div = e('div')
+		  div.child('span')
+		  div.text('foo')
+		  div.child('span')
+		  div.text('bar')
+		let result = render(div.all())
+		expect(result.children[1]).toBe('foo')
+		expect(result.children[3]).toBe('bar')
+	})
 })
 
 describe('Selection operations',()=>{
@@ -181,10 +193,10 @@ describe('Selection operations',()=>{
 	
 	test('Parent and children',()=>{
 	   let div = e('div')
+       div.text('bla')
 	   let spans =  div.children('span',[1,2,3])
-	   
 	   expect(div.children().size()).toBe(3)
-	   expect(spans.parent().type()).toBe('div')
+	   expect(spans.parents().type()).toBe('div')
 	})
 
 	test('Filter, Other and Merge',()=>{
@@ -199,21 +211,20 @@ describe('Selection operations',()=>{
 	   expect(other.merge(filtered).size()).toBe(3)
 	})
 
-	test.skip('Sort',()=>{
+	test('Sort',()=>{
 	   let spans =  e('div')
 		 .children('span',[2,1,3])
 		 .attr('datum',d=>d)
-		 .attr('i',i=>i)
+		 .attr('i',(_,i)=>i)
 		 
-	   spans.sort()
-	   expect(spans.datum()).toBe(1)
+	   expect(spans.sort().datum()).toBe(1)
 	   
-	   spans.sort((a,b)=> a<b?1:a>b?-1:0 )
-	   expect(spans.datum()).toBe(3)
+	   let tt = spans.sort((a,b)=> a<b?1:a>b?-1:0 )
+	   expect(tt.datum()).toBe(3)
 	   
 	   let result = render(spans.all())
-	   expect(result.children.map(ch=>props.datum)).toMatchObject([3,2,1])
-	   expect(result.children.map(ch=>props.i)).toMatchObject([2,0,1])
+	   expect(result.children.map(ch=>ch.props.datum)).toMatchObject([3,2,1])
+	   expect(result.children.map(ch=>ch.props.i)).toMatchObject([2,0,1])
 	})
 })
 
