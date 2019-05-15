@@ -32,5 +32,8 @@
       ]
     ],
     "plugins": []
+  },
+  "jest":{
+    "transform":{}
   }
 }

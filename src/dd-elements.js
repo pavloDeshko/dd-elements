@@ -1,5 +1,5 @@
 module.exports = {element, e: element, wrap}
-createElement = require('react').createElement
+const createElement = require('react').createElement
 
 function element(type, data){
 	let elem = draft(type)
