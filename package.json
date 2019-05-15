@@ -4,19 +4,33 @@
   "description": "Data-Driver React Elements",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-	"build" "babel scr --out-dir lib"
+    "test": "npm run build && jest",
+    "build": "node_modules/.bin/babel src --out-dir lib"
   },
   "author": "Pavlo Deshko",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
     "jest": "^24.1.0",
     "react": "^16.8.3",
     "react-test-renderer": "^16.8.3"
   },
   "peerDependencies": {
     "react": "*"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "ie": "9"
+          }
+        }
+      ]
+    ],
+    "plugins": []
   }
 }
