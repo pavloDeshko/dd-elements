@@ -4,11 +4,14 @@
   "description": "Data-Driver React Elements",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+	"build" "babel scr --out-dir lib"
   },
   "author": "Pavlo Deshko",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
     "jest": "^24.1.0",
     "react": "^16.8.3",
     "react-test-renderer": "^16.8.3"
