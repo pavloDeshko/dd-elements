@@ -1,5 +1,5 @@
 A d3 style alternative to JSX to write React elements.
-
+[![Build Status](https://travis-ci.com/pavloDeshko/dd-elements.svg?branch=master)](https://travis-ci.com/pavloDeshko/dd-elements)
 # UNDER DEVELOPMENT #
 
 #### element(type[,datum])

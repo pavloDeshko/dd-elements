@@ -1,14 +1,17 @@
 {
   "name": "dd-elements",
   "version": "0.1.0",
-  "description": "Data-Driver React Elements",
+  "description": "D3-style alternative to JSX for React.js",
+  "keywords": ["jsx","no-jsx","react","data-driven","d3"],
+  "homepage": "https://github.com/pavloDeshko/dd-elements"
   "main": "index.js",
+  "files": "/lib",
   "scripts": {
     "test": "npm run build && jest",
     "build": "node_modules/.bin/babel src --out-dir lib",
     "size": "size-limit"
   },
-  "author": "Pavlo Deshko",
+  "author": "Pavlo Deshko <pavlodeshko92@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
