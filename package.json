@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run build && jest",
-    "build": "node_modules/.bin/babel src --out-dir lib"
+    "build": "node_modules/.bin/babel src --out-dir lib",
+    "size": "size-limit"
   },
   "author": "Pavlo Deshko",
   "license": "MIT",
@@ -13,9 +14,11 @@
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
+    "babel-preset-minify": "^0.5.0",
     "jest": "^24.1.0",
     "react": "^16.8.3",
-    "react-test-renderer": "^16.8.3"
+    "react-test-renderer": "^16.8.3",
+    "size-limit": "^1.3.2"
   },
   "peerDependencies": {
     "react": "*"
@@ -29,11 +32,17 @@
             "ie": "9"
           }
         }
-      ]
+      ],
+	  "minify"
     ],
     "plugins": []
   },
-  "jest":{
-    "transform":{}
-  }
+  "jest": {
+    "transform": {}
+  },
+  "size-limit": [
+    {
+      "path": "index.js"
+    }
+  ]
 }
