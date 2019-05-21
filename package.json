@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "D3-style alternative to JSX for React.js",
   "keywords": ["jsx","no-jsx","react","data-driven","d3"],
-  "homepage": "https://github.com/pavloDeshko/dd-elements"
+  "homepage": "https://github.com/pavloDeshko/dd-elements",
   "main": "index.js",
   "files": "/lib",
   "scripts": {
