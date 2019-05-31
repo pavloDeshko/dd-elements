@@ -1,4 +1,4 @@
-##dd-elements API
+## dd-elements API
 
 #### element(type[,datum])
   Returns selection containing element of specified type. Optionaly binds datum to returned element.
@@ -35,6 +35,8 @@
   Sets atribute or prop to selected elements. If value is specified as function, it will be called with element's datum, current index and selection containing element. If value is not specified returns atribute value of the first element in selection.
 #### selection.prop(name,value)
   Alias to selection.attr(). Semanticly should be used with React Elements.
+#### selection.props(props)
+  Sets multiple props (attributes) specified as key:value pairs in props object.
 #### selection.classed(names,value=true)
   Sets className prop of an element. Value can be specified as function. If value is not specified returns true if first element in selection belongs to all specified classes, false othewise.
 #### selection.style(name,value)

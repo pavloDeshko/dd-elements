@@ -128,6 +128,12 @@ class Selection {
 	prop(){
 		return this.attr(...arguments)
 	}
+	props(props){
+		for(let key in props){
+			this.attr(key,props[key])
+		}
+		return this
+	}
 	classed(string, value = true){
 		this.elems.forEach((el,i)=>{
 		  let names = this._evl(string,el,i).split(' ')

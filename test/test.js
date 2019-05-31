@@ -267,7 +267,9 @@ function modify(selection){
 	  .attr('checked',false)
 	
 	  .prop('prop','element_prop')
-	
+	  
+	  .props({one:1,two:2,three:()=>3})
+	  
 	  .classed('class1 class2', true)
 	  .classed('class1')
 	  .classed('class3 class1')
@@ -290,7 +292,8 @@ function extendExpect(){
 				mod:'element_attr_mod',
 				a:'link',
 				disabled:true,
-				prop:'element_prop'
+				prop:'element_prop',
+				one:1,two:2,three:3
 			})
 			expect(props.checked).toBeFalsy(),
 			
