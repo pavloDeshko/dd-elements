@@ -1,16 +1,18 @@
-import {createElement, ElementType, ReactNode, ReactElement, FunctionComponent} from 'react'
+import {createElement, ElementType, ReactNode, ReactElement, FunctionComponent, Key as ReactKey} from 'react'
 
 type NotFunction = {apply?:never, bind?:never} & Object
 type AnyCollection = Collection<unknown,unknown,AnyCollection>
+type AnyProps = {[key:string]: Object | null | undefined}
 type Callback<ValueT, DatumT>= (datum :DatumT, index :number)=>ValueT
 type Evaluate<ValueT, DatumT> = ValueT | Callback<ValueT, DatumT>
+type Child = Draft | string
 
 /**
  * Class representing the collection of elements.
  */
-class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = AnyCollection>{
+class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection>{
   private elements :Array<Draft>
-  private origin :OriginT 
+  private origin :OriginT | null
   private evaluate<ValueT extends NotFunction>(value :Evaluate<ValueT, CurrentDatumT>, datum:any, i :number):ValueT{
     if(typeof value == 'function'){
       return value(datum, i)
@@ -27,7 +29,7 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    */
   constructor(type? :ElementType<CurrentPropsT>, datum :(CurrentDatumT | null) = null){
     this.elements = type !== undefined ? [new Draft(type, datum, null)] : []
-    this.origin = new Collection() as OriginT //TODO should we save user from himself?
+    this.origin = null
   }
 
   /**
@@ -48,39 +50,44 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @param [datum=null] Datum to be assigned to created element. If not specified will share its parent's datum.
    * @returns Collection which contains added elements.
    */
-  public child<PropsT, DatumT>(//TODO maybe should return parent elements?
+  public child<PropsT = AnyProps, DatumT = CurrentDatumT>(
     type :ElementType<PropsT>, 
     datum? :Evaluate<DatumT,CurrentDatumT>
-  ):Collection<PropsT, DatumT extends undefined ? CurrentDatumT : DatumT, this>{
+  ):Collection<PropsT, DatumT, this>{
     const addedElements :Array<Draft> = []
     this.elements.forEach((parent,i)=>{
       const child = new Draft(type, datum !== undefined ? this.evaluate(datum, parent.datum, i) : parent.datum, parent)
       addedElements.push(child)
       parent.children.push(child)
     })
-    return Collection.create(addedElements, this)//TODO check if it works..
+    return Collection.create(addedElements, this)
   }
   
   /**
-   * Appends one child for every element in data array to each element in collection.
+   * Appends one child for every element in data array to each element in collection. Elements will be passed to React as a list, so every should have a unique "key" prop.
    * @param type Element type. Can be tag string or React component. 
    * @param data Requiered array with datums for every element. Alternatively can be number of elements to be added.
+   * @param keys Optional function which will return value of special prop "key" for each element.
    * @returns Collection which contains added elements.
    */
-  public children<PropsT, DatumT>(
+  public children<PropsT = AnyProps, DatumT = CurrentDatumT>(
     type :ElementType<PropsT>, 
-    data :(Array<Evaluate<DatumT,CurrentDatumT>>) | number
+    data :(Array<Evaluate<DatumT,CurrentDatumT>>) | number,
+    keys : Callback<ReactKey,DatumT> = (_,i)=>i
   ):Collection<PropsT, DatumT, this>{
-    const addedElements :Array<Draft> = []
+    let addedElements :Array<Draft> = []
     this.elements.forEach((parent,i)=>{
       if(typeof data == 'number'){
         data = [...Array(data)].map(()=>parent.datum)
       }
       const children = data.map(datum=>new Draft(type, this.evaluate(datum, parent.datum, i), parent))
-      addedElements.concat(children)
-      parent.children.concat(children)
+/*       children.forEach((child,i)=>{
+        child.props['key'] = keys !== undefined ? this.evaluate(keys, child.datum,i) : i//TODO should you do that
+      }) */
+      addedElements = addedElements.concat(children)
+      parent.children = parent.children.concat([children])
     })
-    return Collection.create(addedElements, this)
+    return Collection.create<PropsT, DatumT, this>(addedElements, this).keys(keys)
   }
   
   /**
@@ -89,13 +96,13 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @returns Collection which contains added elements.
    */
   public append<PropsT, DatumT>(fragment :Collection<PropsT,DatumT>):Collection<PropsT, DatumT, this>{
-    const addedElements :Array<Draft> = []
+    let addedElements :Array<Draft> = []
     this.elements.forEach((parent,i)=>{
       fragment.elements.forEach(e=>{
         e.parent = parent
       })
-      addedElements.concat(fragment.elements)
-      parent.children.concat(fragment.elements)
+      addedElements = addedElements.concat(fragment.elements)
+      parent.children = parent.children.concat(fragment.elements)
     })
     return Collection.create(addedElements, this)
   }
@@ -105,7 +112,7 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @returns Collection that contains parent elements.
    */
   public parents():OriginT{
-    return this.origin
+    return this.origin || new Collection() as OriginT
   }
   /**
    * Alias to parents(). Use to go "up" the tree when chaining.
@@ -120,10 +127,10 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @returns Same collection.
    */
   public datum<DatumT>(datum: Evaluate<DatumT,CurrentDatumT>):Collection<CurrentPropsT, DatumT, OriginT>{
-    this.elements.forEach((e,i)=>{//TODO modifying?..
+    this.elements.forEach((e,i)=>{
       e.datum = this.evaluate(datum, e.parent && e.parent.datum, i)
     })
-    return this as Collection<CurrentPropsT,DatumT,OriginT> 
+    return this as Collection<CurrentPropsT,DatumT,OriginT>//TODO create new collection?
   }
 
 
@@ -140,6 +147,18 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
     })
     return this
   }
+
+  /**
+   * Shortcut to assigns special key prop to elements in selection.
+   * @param value Should be specified as function to maintain uniquness.
+   * @returns Same collection.
+   */
+  public keys(value :Evaluate<ReactKey, CurrentDatumT>){
+    this.elements.forEach((e,i)=>{
+      e.props['key'] = this.evaluate(value, e.datum, i)
+    })
+    return this
+  }
   
   /**
    * Assings props or attributes to all elements in collection.
@@ -148,10 +167,11 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    */
   public props(props :Partial<{[K in keyof CurrentPropsT]:Evaluate<CurrentPropsT[K],CurrentDatumT>}>){
     this.elements.forEach((e,i)=>{
+      const evaled :any = {};
       (Object.keys(props) as Array<keyof CurrentPropsT>).forEach((k)=>{
-        const value = this.evaluate(e.props[k], e.datum, i)
-          e.props[k] = value !== undefined ? value : e.props[k]
+        evaled[k] = this.evaluate(props[k]!, e.datum, i)
       })
+      e.props = {...e.props, ...evaled}
     })
     return this
   }
@@ -162,11 +182,11 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @param on Should speciefied classed be removed or added.
    * @returns Same collection.
    */
-  public classed(classNames :string, on :Evaluate<boolean,CurrentDatumT>){//TODO add array support
+  public classed(classNames :string, on :Evaluate<boolean,CurrentDatumT> = true){//TODO add array support
     const newNames = classNames.split(' ')
     this.elements.forEach((e,i)=>{
       on = this.evaluate(on, e.datum, i)
-      const names = e.props.className.split(' ')
+      const names = e.props.className ? e.props.className.split(' ') : []
       newNames.forEach(name=>{
         const index = names.indexOf(name)
         index > -1 ? 
@@ -197,13 +217,22 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
    * @returns React Elements tree.
    */
   public toReact():ReactElement{
-    const findRoot = (d :Draft):Draft=>d.parent === null ? d : findRoot(d)
+
+    const findRoot = (d :Draft):Draft=>d.parent === null ? d : findRoot(d.parent)
     const _toReact = (e:Draft):ReactElement => createElement(
       e.type, 
-      this.props, 
-      e.children.map((e):ReactNode => typeof e === 'string' ?  e : _toReact(e))
+      e.props, 
+      ...e.children.map((child):ReactNode =>{
+        if(typeof child === 'string'){
+          return child
+        }else if(child instanceof Draft){
+          return _toReact(child)
+        }else{
+          return child.map(li=>typeof li === 'string' ? li : _toReact(li))
+        }
+      })
     )
-    return this.elements[0] ? _toReact(findRoot(this.elements[0])) : createElement(()=>null)
+    return this.elements[0] ? _toReact(findRoot(this.elements[0])) : createElement('')
   }
 }
 
@@ -211,16 +240,13 @@ class Collection<CurrentPropsT, CurrentDatumT, OriginT extends AnyCollection = A
  * Class representing element yet not converted to react. Not meant to be used directly, use child(), children() or append() instead.
  */
 class Draft{
-  type :ElementType
-  datum :any
-  props :any = {className:''}
-  children :Array<Draft | string> = []
-  parent :Draft|null
-  constructor(type:ElementType, datum :any = null, parent :Draft|null){
-    this.type = type
-    this.datum = datum
-    this.parent = parent
-  }
+  props :any = {}
+  children :Array<Child | Child[]> = []
+  constructor(
+    public type:ElementType, 
+    public datum :any = null, 
+    public parent :Draft|null
+  ){}
 }
 
 /**
