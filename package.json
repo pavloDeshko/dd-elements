@@ -15,9 +15,10 @@
     "/lib/*"
   ],
   "scripts": {
-    "test": "npm run build && jest",
-    "test:ts": "jest test.ts",
-    "build": "node_modules/.bin/babel src --out-dir lib",
+    "test": "jest src/test.ts",
+    "build": "tsc",
+    "build:legacy": "node_modules/.bin/babel src/legacy/dd-elements.js --out-dir lib/legacy",
+    "test:legacy": "npm run build && jest",
     "size": "size-limit"
   },
   "author": "Pavlo Deshko <pavlodeshko92@gmail.com>",

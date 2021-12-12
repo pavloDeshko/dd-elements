@@ -1,7 +1,7 @@
 import Renderer, {ReactTestInstance} from "react-test-renderer"
 import {createElement, ReactElement} from "react"
 
-import Collection, {withData} from '../src/dd-elements'
+import Collection, {withData} from './dd-elements'
 
 const render = (el :ReactElement):ReactTestInstance=>{
   return Renderer.create(el).root
