@@ -8,9 +8,18 @@ type Evaluate<ValueT, DatumT> = ValueT | Callback<ValueT, DatumT>
 type Child = Draft | string
 
 /**
+ * Lets you return collection in functional component without calling toReact().
+ * @param {Callback} cb Functional component which returns a Collection.
+ * @returns Wrapped component.
+ */
+ export const withData = <PropsT>(cb :(props :PropsT)=>AnyCollection):FunctionComponent<PropsT>=>{
+  return props => cb(props).toReact()
+}
+
+/**
  * Class representing the collection of elements.
  */
-class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection>{
+ export default class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection>{
   private elements :Array<Draft>
   private origin :OriginT | null
   private evaluate<ValueT extends NotFunction>(value :Evaluate<ValueT, CurrentDatumT>, datum:any, i :number):ValueT{
@@ -23,8 +32,8 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
 
   /**
    * Use to create a collection with root element for your component.
-   * @param type Element type. Can be tag string or React component. 
-   * @param [datum=null] Optional datum to be assigned to created element.
+   * @param {ElementType} type Element type. Can be tag string or React component. 
+   * @param {any} [datum=null] Optional datum to be assigned to created element.
    * @return Collection that contains created root element.
    */
   constructor(type? :ElementType<CurrentPropsT>, datum :(CurrentDatumT | null) = null){
@@ -32,7 +41,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
     this.origin = null
   }
 
-  /**
+  /*
    * Isn't supposed to be called directly, use new Collection() or append().
    */
    private static create<PropsT, DatumT, OriginT extends AnyCollection>(elements :Array<Draft>, origin :OriginT){
@@ -46,8 +55,8 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   /* Children methods */
   /**
    * Appends exactly one child to every element in collection.
-   * @param type Element type. Can be tag string or React component.
-   * @param [datum=null] Datum to be assigned to created element. If not specified will share its parent's datum.
+   * @param {ElementType} type Element type. Can be tag string or React component.
+   * @param {any} [datum=null] Datum to be assigned to created element. If not specified will share its parent's datum.
    * @returns Collection which contains added elements.
    */
   public child<PropsT = AnyProps, DatumT = CurrentDatumT>(
@@ -65,9 +74,9 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   
   /**
    * Appends one child for every element in data array to each element in collection. Elements will be passed to React as a list, so every should have a unique "key" prop.
-   * @param type Element type. Can be tag string or React component. 
-   * @param data Requiered array with datums for every element. Alternatively can be number of elements to be added.
-   * @param keys Optional function which will return value of special prop "key" for each element.
+   * @param {ElementType} type Element type. Can be tag string or React component. 
+   * @param {any[] | number} data Requiered array with datums for every element. Alternatively can be number of elements to be added.
+   * @param {Callback} keys Optional function which will return value of special prop "key" for each element.
    * @returns Collection which contains added elements.
    */
   public children<PropsT = AnyProps, DatumT = CurrentDatumT>(
@@ -92,7 +101,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   
   /**
    * Appends already created elements to every element in collection.
-   * @param fragment Collection of elements to be added.
+   * @param {Collection} fragment Collection of elements to be added.
    * @returns Collection which contains added elements.
    */
   public append<PropsT, DatumT>(fragment :Collection<PropsT,DatumT>):Collection<PropsT, DatumT, this>{
@@ -118,11 +127,13 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
    * Alias to parents(). Use to go "up" the tree when chaining.
    * @returns Collection that contains parent elements.
    */
-  public up = this.parents
+  public up(){
+    return this.parents()
+  }
 
   /**
    * Assigns datum to every element in collection.
-   * @param datum Can be specified as value or function.
+   * @param {any} datum Can be specified as value or function.
    * If value is specified as function, it will be called with element's(or its parent's) datum and current index inside a collection.
    * @returns Same collection.
    */
@@ -137,8 +148,8 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   /* Props methods */
   /**
    * Sets prop or attribute to all elements in collection.
-   * @param key String key.
-   * @param value Can be specified as value or function. 
+   * @param {string} key String key.
+   * @param {string | number | Callback} value Can be specified as value or function. 
    * @returns Same collection.
    */
   public prop<Key extends keyof CurrentPropsT>(key :Key, value :Evaluate<CurrentPropsT[Key], CurrentDatumT>){
@@ -150,7 +161,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
 
   /**
    * Shortcut to assigns special key prop to elements in selection.
-   * @param value Should be specified as function to maintain uniquness.
+   * @param {string | number | Callback} value Should be specified as function to maintain uniquness.
    * @returns Same collection.
    */
   public keys(value :Evaluate<ReactKey, CurrentDatumT>){
@@ -162,7 +173,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   
   /**
    * Assings props or attributes to all elements in collection.
-   * @param props Object containing key:value pairs. Values can be specified as value or function. 
+   * @param {Object} props Object containing key:value pairs. Values can be specified as value or function. 
    * @returns Same collection.
    */
   public props(props :Partial<{[K in keyof CurrentPropsT]:Evaluate<CurrentPropsT[K],CurrentDatumT>}>){
@@ -178,8 +189,8 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
 
   /**
    * Sets className prop of all elements in collection.
-   * @param classNames String of class names splitted by ' '. 
-   * @param on Should speciefied classed be removed or added.
+   * @param {string} classNames String of class names splitted by ' '. 
+   * @param {boolean} on Should speciefied classed be removed or added.
    * @returns Same collection.
    */
   public classed(classNames :string, on :Evaluate<boolean,CurrentDatumT> = true){//TODO add array support
@@ -200,7 +211,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   
   /**
    * Appends text to all elements in collection.
-   * @param value String value. Can be specified as value or function. 
+   * @param {string} value String value. Can be specified as value or function. 
    * @returns Same collection.
    */
   public text(value :Evaluate<string, CurrentDatumT>){
@@ -236,7 +247,7 @@ class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends
   }
 }
 
-/**
+/*
  * Class representing element yet not converted to react. Not meant to be used directly, use child(), children() or append() instead.
  */
 class Draft{
@@ -248,13 +259,3 @@ class Draft{
     public parent :Draft|null
   ){}
 }
-
-/**
- * Lets you return collection in functional component without calling toReact().
- * @param cb Functional component which returns a Collection.
- * @returns Wrapped component.
- */
-export const withData = <PropsT>(cb :(props :PropsT)=>AnyCollection):FunctionComponent<PropsT>=>{
-  return props => cb(props).toReact()
-}
-export default Collection

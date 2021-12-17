@@ -1,52 +1,294 @@
-## dd-elements API
+# [dd-elements](https://github.com/pavloDeshko/dd-elements) *0.1.0*
 
-#### element(type[,datum])
-  Returns selection containing element of specified type. Optionaly binds datum to returned element.
-#### e()
-  Alias to element()
-  
-#### selection.parents()
-  Returns selection of elements' parents.
-#### selection.merge(other)
-  Returns new selection resulted from merging two selections.
-#### selection.filter(filter)
-  Filters elements in selection. Filter must be specified as function, which will be called with element's current datum, current index and selection containing current element.
-#### selection.other()
-  If called on a selection, which resulted from selection.filter() call, retuns selection containing filtered out elements.
-#### selection.sort(compare)
-  Sorts and reinserts elements into their parent elements according to compare function, whish should return zero, positive or negative value when called with element's a datum, b datum, a selection, b selection. Compare defaults to ascending of datums. Returns new selection. Note that order of elements in original selecion may differ from new positions.
-#### selection.size()
-  Return number of elements in selection.
+> D3-style alternative to JSX for React.js
 
-#### selection.child(type[, datum])
-  Append exactly one element of specified type to every element in selection and binds its datum. Type can be either string or React Component. If datum is not specified element will share its parent's datum. Note that type cannot be specified as function - any function will be treated as React Element.
-#### selection.children(type, data)
-  Appends data.length number of elements of specified type and bind corresponding data to them. If selection contains multiple elements, data could be specified as function, which will be called for every parent element with it's datum, current index and selection containing element.
-  If called with no arguments returns selection of elements' children.
-#### selecion.append(type[, data])
-  Acts as selecion.children() if passed an array (or function which returns array) as data. Otherwise acts like selecion.child()
-  As other sumilar methods returns selection of newly appended elements.
-#### selection.datum(value)
-  Manualy binds or rebinds datums of selected elements. If value is specified as function, it will be called with element's current datum, current index and selection containing current element.
 
-#### selection.type([value])
-  Returns type of first element in selection or changes it's type.
-#### selection.attr(name[,value])
-  Sets atribute or prop to selected elements. If value is specified as function, it will be called with element's datum, current index and selection containing element. If value is not specified returns atribute value of the first element in selection.
-#### selection.prop(name,value)
-  Alias to selection.attr(). Semanticly should be used with React Elements.
-#### selection.props(props)
-  Sets multiple props (attributes) specified as key:value pairs in props object.
-#### selection.classed(names,value=true)
-  Sets className prop of an element. Value can be specified as function.
-#### seloction.isClassed(names
-  Returns true if first element in selection belongs to all specified classes, false othewise.
-#### selection.style(name,value)
-  Adds inline style pair to an element. Value can be specified as function.
-#### selection.text(value)
-  Adds escaped text after last child of each selected element.
-#### selection.all()
-  Converts the whole tree to which selected elements belong to valid React elements.
-  
-#### wrap(function, passElement=false)
-  Wraps functional component or render function, so selection can be returned without all() call. If passElement is true, then element() function is passed to callback function as second argument for convenience.
+### lib/index.js
+
+
+#### withData(cb) 
+
+Lets you return collection in functional component without calling toReact().
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| cb | `Callback`  | Functional component which returns a Collection. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Wrapped component.
+
+
+
+#### Collection(type[, datum&#x3D;null]) 
+
+Use to create a collection with root element for your component.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| type | `ElementType`  | Element type. Can be tag string or React component. | &nbsp; |
+| datum&#x3D;null | `any`  | Optional datum to be assigned to created element. | *Optional* |
+
+
+
+
+##### Returns
+
+
+-  Collection that contains created root element.
+
+
+
+#### Collection.children(type, data, keys) 
+
+Appends one child for every element in data array to each element in collection. Elements will be passed to React as a list, so every should have a unique "key" prop.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| type | `ElementType`  | Element type. Can be tag string or React component. | &nbsp; |
+| data | `Array.<any>` `number`  | Requiered array with datums for every element. Alternatively can be number of elements to be added. | &nbsp; |
+| keys | `Callback`  | Optional function which will return value of special prop "key" for each element. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Collection which contains added elements.
+
+
+
+#### Collection.append(fragment) 
+
+Appends already created elements to every element in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| fragment | `Collection`  | Collection of elements to be added. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Collection which contains added elements.
+
+
+
+#### Collection.parents() 
+
+Use to go "up" the tree when chaining.
+
+
+
+
+
+
+##### Returns
+
+
+-  Collection that contains parent elements.
+
+
+
+#### Collection.up() 
+
+Alias to parents(). Use to go "up" the tree when chaining.
+
+
+
+
+
+
+##### Returns
+
+
+-  Collection that contains parent elements.
+
+
+
+#### Collection.datum(datum) 
+
+Assigns datum to every element in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| datum | `any`  | Can be specified as value or function. If value is specified as function, it will be called with element's(or its parent's) datum and current index inside a collection. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.prop(key, value) 
+
+Sets prop or attribute to all elements in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| key | `string`  | String key. | &nbsp; |
+| value | `string` `number` `Callback`  | Can be specified as value or function. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.keys(value) 
+
+Shortcut to assigns special key prop to elements in selection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| value | `string` `number` `Callback`  | Should be specified as function to maintain uniquness. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.props(props) 
+
+Assings props or attributes to all elements in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| props | `Object`  | Object containing key:value pairs. Values can be specified as value or function. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.classed(classNames, on) 
+
+Sets className prop of all elements in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| classNames | `string`  | String of class names splitted by ' '. | &nbsp; |
+| on | `boolean`  | Should speciefied classed be removed or added. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.text(value) 
+
+Appends text to all elements in collection.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| value | `string`  | String value. Can be specified as value or function. | &nbsp; |
+
+
+
+
+##### Returns
+
+
+-  Same collection.
+
+
+
+#### Collection.toReact() 
+
+Converts the whole tree to which selected elements belong to valid React elements.
+To be called before returning in functional component or render function.
+
+
+
+
+
+
+##### Returns
+
+
+-  React Elements tree.
+
+
+
+
+*Documentation generated with [doxdox](https://github.com/neogeek/doxdox).*
