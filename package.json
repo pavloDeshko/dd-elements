@@ -14,16 +14,19 @@
   "license": "MIT",
   "main": "./lib/index",
   "scripts": {
-    "test": "jest test.ts",
+    "test": "yarn build && jest test.ts",
     "build": "tsc",
     "size": "size-limit",
-    "test:legacy": "jest ./legacy/test.js"
+    "test:legacy": "jest ./legacy/test.js",
+    "prepare": "husky install",
+    "pre-commit": "yarn test"
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.4",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.27",
     "@types/react-test-renderer": "^17.0.1",
+    "husky": "^7.0.4",
     "jest": "^27.4.3",
     "react": "^17.0.2",
     "react-test-renderer": "^17.0.2",
@@ -35,20 +38,6 @@
     "react": "*"
   },
   "dependencies": {},
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "ie": "9"
-          }
-        }
-      ],
-      "minify"
-    ],
-    "plugins": []
-  },
   "jest": {
     "preset": "ts-jest/presets/default-esm",
     "extensionsToTreatAsEsm": [
