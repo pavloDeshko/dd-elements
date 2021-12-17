@@ -10,40 +10,31 @@
     "d3"
   ],
   "homepage": "https://github.com/pavloDeshko/dd-elements",
-  "main": "index.js",
-  "files": [
-    "/lib/*"
-  ],
-  "scripts": {
-    "test": "jest src/test.ts",
-    "build": "tsc",
-    "build:legacy": "node_modules/.bin/babel src/legacy/dd-elements.js --out-dir lib/legacy",
-    "test:legacy": "npm run build && jest",
-    "size": "size-limit"
-  },
   "author": "Pavlo Deshko <pavlodeshko92@gmail.com>",
   "license": "MIT",
+  "main": "./lib/index",
+  "scripts": {
+    "test": "jest test.ts",
+    "build": "tsc",
+    "size": "size-limit",
+    "test:legacy": "jest ./legacy/test.js"
+  },
   "devDependencies": {
-    "@babel/cli": "^7.15.7",
-    "@babel/core": "^7.15.8",
-    "@babel/preset-env": "^7.15.8",
-    "@size-limit/preset-small-lib": "^5.0.5",
+    "@size-limit/preset-small-lib": "^7.0.4",
     "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.11",
-    "@types/prop-types": "^15.7.4",
     "@types/react": "^17.0.27",
     "@types/react-test-renderer": "^17.0.1",
-    "babel-preset-minify": "^0.5.1",
     "jest": "^27.4.3",
-    "react": "^16.14.0",
-    "react-test-renderer": "^16.14.0",
-    "size-limit": "^5.0.5",
+    "react": "^17.0.2",
+    "react-test-renderer": "^17.0.2",
+    "size-limit": "^7.0.4",
     "ts-jest": "^27.0.7",
     "typescript": "^4.5.2"
   },
   "peerDependencies": {
     "react": "*"
   },
+  "dependencies": {},
   "babel": {
     "presets": [
       [
@@ -71,8 +62,7 @@
   },
   "size-limit": [
     {
-      "path": "index.js"
+      "path": "./lib/index.js"
     }
-  ],
-  "dependencies": {}
+  ]
 }
