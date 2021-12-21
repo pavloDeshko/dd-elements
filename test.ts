@@ -1,7 +1,7 @@
 import Renderer, {ReactTestInstance} from "react-test-renderer"
 import {createElement, ReactElement} from "react"
 
-import Collection, {withData} from './lib/index'
+import e, {Collection, withData} from './lib/index'
 
 const render = (el :ReactElement):ReactTestInstance=>{
   return Renderer.create(el).root
@@ -29,16 +29,16 @@ describe('new Collection()',()=>{
     expect(root.children.length).toBe(0)
   })
   test('div',()=>{
-    const root = render(new Collection('div').toReact())
+    const root = render(e('div').toReact())
     expect(root.type).toBe('div')
   })
   test('component',()=>{
     const Comp = (props:{a:number})=>null
-    const root = render(new Collection(Comp).toReact())
+    const root = render(e(Comp).toReact())
     expect(root.type).toBe(Comp)
   })
   test('with datum and prop',()=>{//PROP
-    const root = render(new Collection('div',42)
+    const root = render(e('div',42)
       .prop('fromDatum',(d)=>d) 
       .toReact()
     )
@@ -48,7 +48,7 @@ describe('new Collection()',()=>{
 
 describe('appends',()=>{
   test('child',()=>{
-    const root = render(new Collection('div')
+    const root = render(e('div')
       .child('div')
       .prop('fromDatum', d=>d)
       .toReact()
@@ -58,7 +58,7 @@ describe('appends',()=>{
   })
   test('child with datum',()=>{
     const Comp = (props:{fromDatum:number})=>null
-    const root = render(new Collection('div')
+    const root = render(e('div')
       .child(Comp,42)
       .prop('fromDatum', d=>d)
       .toReact()
@@ -66,11 +66,11 @@ describe('appends',()=>{
     expect((root.children[0] as ReactTestInstance).props['fromDatum']).toBe(42)
   })
   test('children by number',()=>{
-    const root = render(new Collection('div').children('div', 10).toReact())
+    const root = render(e('div').children('div', 10).toReact())
     expect(root.children.length).toBe(10)
   })
   test('children by data',()=>{
-    const root = render(new Collection('div')
+    const root = render(e('div')
       .children('div', [1,2,3,4,5])
       .prop('fromDatum', d=>d)
       .toReact()
@@ -79,14 +79,14 @@ describe('appends',()=>{
     expect((root.children[4] as ReactTestInstance).props['fromDatum']).toBe(5)
   })
   test('childern with keys', ()=>{
-    const result =  new Collection('div')
+    const result =  e('div')
       .children('span',[1,2,3],d=>d+10)
       .toReact()
       //expect(result.props.children[0].props['key']).toEqual(11) //How to acsess special key prop? TODO
   })
   test('append',()=>{
-    const root = new Collection('div').classed('class')
-    const children = new Collection('div').children('span',12)
+    const root = e('div').classed('class')
+    const children = e('div').children('span',12)
     
     const result = render(root.append(children).toReact())
     expect(result.props.className).toContain('class')
@@ -94,25 +94,24 @@ describe('appends',()=>{
   })
   test('up',()=>{
     const collection = new Collection()
-    const result = new Collection('div')
+    const result = e('div')
       .child('span')
       .up()
       .prop('prop',42)
       .toReact()
 
     const root = render(result)
-    expect(root.props['prop']).toBe(42)
-    expect(collection.up).toBe(collection.parents)
+    expect(root.props['prop']).toBe(42)//TODO add alias test
   })
   test('up on root', ()=>{//TODO
-    const empty = render(new Collection('div').up().toReact())
+    const empty = render(e('div').up().toReact())
     expect(empty.type).toBe('')
   })
 })
 
 describe('datum assign',()=>{
   test('manual datum', ()=>{
-    const result = render(new Collection('div')
+    const result = render(e('div')
       .datum(42)
       .prop('fromDatum',d=>d)
       .toReact()
@@ -120,7 +119,7 @@ describe('datum assign',()=>{
     expect(result.props['fromDatum']).toEqual(42)
   })
   test('inherit', ()=>{
-    const result = render(new Collection('div',42)
+    const result = render(e('div',42)
       .child('div')
       .children('div',10)
       .prop('fromDatum', d=>d)
@@ -132,7 +131,7 @@ describe('datum assign',()=>{
 
 describe('props',()=>{
   test('prop',()=>{
-    const result = render(new Collection('div','fortyTwo')
+    const result = render(e('div','fortyTwo')
       .prop('prop',42)
       .prop('fromDatum',(d:string)=>d)
       .toReact()
@@ -141,13 +140,13 @@ describe('props',()=>{
     expect(result.props['fromDatum']).toBe('fortyTwo')
   })
   test('props',()=>{
-    const result = render(new Collection('div',42)
+    const result = render(e('div',42)
       .props({a:1, b:2, fromDatum:d=>d})
       .toReact())
     expect(result.props).toMatchObject({a:1, b:2, fromDatum:42})
   })
   test('classed',()=>{
-    const result = render(new Collection('div',true)
+    const result = render(e('div',true)
       .classed('class1 class2', true)
       .classed('class1')
       .classed('class3 class1')
@@ -161,7 +160,7 @@ describe('props',()=>{
 
   })
   test('text',()=>{
-    const result = render(new Collection('div', 'fromDatum')
+    const result = render(e('div', 'fromDatum')
       .text('foobar')
       .text((d:string)=>d)
       .toReact()
@@ -174,7 +173,7 @@ describe('props',()=>{
 describe('hoc',()=>{
   test('valid',()=>{
     const Comp = withData(()=>{
-      const result = new Collection('div')
+      const result = e('div')
       return result //TODO
     })
     const result = render(createElement(Comp))

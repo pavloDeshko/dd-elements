@@ -8,7 +8,16 @@ type Evaluate<ValueT, DatumT> = ValueT | Callback<ValueT, DatumT>
 type Child = Draft | string
 
 /**
- * Lets you return collection in functional component without calling toReact().
+ * Shortcut (alias to new Collection()) function to create Collection with single root element.
+ * @param {ElementType} type Element type. Can be tag string or React component. 
+ * @param {any} [datum=null] Optional datum to be assigned to created element.
+ * @return Collection that contains created root element.
+ */
+const e = <PropsT = AnyProps, DatumT = null>(type :ElementType<PropsT>, datum? :DatumT) => new Collection<PropsT,DatumT>(type,datum)
+export default e
+
+/**
+ * Lets you return collection in functional component without calling toReact() method.
  * @param {Callback} cb Functional component which returns a Collection.
  * @returns Wrapped component.
  */
@@ -19,7 +28,7 @@ type Child = Draft | string
 /**
  * Class representing the collection of elements.
  */
- export default class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection>{
+ export class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection>{
   private elements :Array<Draft>
   private origin :OriginT | null
   private evaluate<ValueT extends NotFunction>(value :Evaluate<ValueT, CurrentDatumT>, datum:any, i :number):ValueT{

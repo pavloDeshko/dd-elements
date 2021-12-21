@@ -1,4 +1,4 @@
-# [dd-elements](https://github.com/pavloDeshko/dd-elements) *0.1.0*
+# [dd-elements](https://github.com/pavloDeshko/dd-elements) *1.0.0*
 
 > D3-style alternative to JSX for React.js
 
@@ -6,9 +6,33 @@
 ### lib/index.js
 
 
+#### e(type[, datum&#x3D;null]) 
+
+Shortcut (alias to new Collection()) function to create Collection with single root element.
+
+
+
+
+##### Parameters
+
+| Name | Type | Description |  |
+| ---- | ---- | ----------- | -------- |
+| type | `ElementType`  | Element type. Can be tag string or React component. | &nbsp; |
+| datum&#x3D;null | `any`  | Optional datum to be assigned to created element. | *Optional* |
+
+
+
+
+##### Returns
+
+
+-  Collection that contains created root element.
+
+
+
 #### withData(cb) 
 
-Lets you return collection in functional component without calling toReact().
+Lets you return collection in functional component without calling toReact() method.
 
 
 

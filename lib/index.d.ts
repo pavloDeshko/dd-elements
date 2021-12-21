@@ -6,7 +6,15 @@ declare type AnyProps = {
 declare type Callback<ValueT, DatumT> = (datum: DatumT, index: number) => ValueT;
 declare type Evaluate<ValueT, DatumT> = ValueT | Callback<ValueT, DatumT>;
 /**
- * Lets you return collection in functional component without calling toReact().
+ * Shortcut (alias to new Collection()) function to create Collection with single root element.
+ * @param {ElementType} type Element type. Can be tag string or React component.
+ * @param {any} [datum=null] Optional datum to be assigned to created element.
+ * @return Collection that contains created root element.
+ */
+declare const e: <PropsT = AnyProps, DatumT = null>(type: ElementType<PropsT>, datum?: DatumT | undefined) => Collection<PropsT, DatumT, AnyCollection>;
+export default e;
+/**
+ * Lets you return collection in functional component without calling toReact() method.
  * @param {Callback} cb Functional component which returns a Collection.
  * @returns Wrapped component.
  */
@@ -14,7 +22,7 @@ export declare const withData: <PropsT>(cb: (props: PropsT) => AnyCollection) =>
 /**
  * Class representing the collection of elements.
  */
-export default class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection> {
+export declare class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, OriginT extends AnyCollection = AnyCollection> {
     private elements;
     private origin;
     private evaluate;
@@ -105,5 +113,4 @@ export default class Collection<CurrentPropsT = AnyProps, CurrentDatumT = null, 
      */
     toReact(): ReactElement;
 }
-export {};
 //# sourceMappingURL=index.d.ts.map
