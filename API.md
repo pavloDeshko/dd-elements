@@ -1,4 +1,4 @@
-# [dd-elements](https://github.com/pavloDeshko/dd-elements) *1.0.0*
+# [dd-elements](https://github.com/pavloDeshko/dd-elements) *1.0.1*
 
 > D3-style alternative to JSX for React.js
 

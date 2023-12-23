@@ -8,13 +8,13 @@ const render = (el :ReactElement):ReactTestInstance=>{
 }
 
 test.skip('playground', ()=>{
-  const col = new Collection()
+/*   const col = new Collection()
   expect(col.up).toBe(col.child)
   const result = render(new Collection('div')
     .children('div',[11,12,13])
     .prop('key',d=>d)
     .toReact()
-  )
+  ) */
 })
 
 test('setup',()=>{

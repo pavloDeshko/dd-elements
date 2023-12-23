@@ -1,6 +1,6 @@
 {
   "name": "dd-elements",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "D3-style alternative to JSX for React.js",
   "keywords": [
     "jsx-alternative",
