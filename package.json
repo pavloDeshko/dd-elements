@@ -15,20 +15,20 @@
   "license": "MIT",
   "main": "./lib/index",
   "scripts": {
-    "test": "yarn build && jest test.ts",
+    "test": "npm run build && jest test.ts",
     "build": "tsc",
     "docs": "doxdox './lib/index.js' --layout markdown --output API.md",
     "size": "size-limit",
     "test:legacy": "jest ./legacy/test.js",
     "prepare": "husky install",
-    "pre-commit": "yarn test && yarn docs"
+    "pre-commit": "npm run test && npm run docs"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.4",
+    "@size-limit/preset-small-lib": "^11.1.2",
     "@types/jest": "^27.0.3",
     "@types/react": "^17.0.27",
     "@types/react-test-renderer": "^17.0.1",
-    "doxdox": "^3.0.0",
+    "doxdox": "^4.0.0-preview.20",
     "husky": "^7.0.4",
     "jest": "^27.4.3",
     "react": "^17.0.2",
@@ -40,7 +40,6 @@
   "peerDependencies": {
     "react": "*"
   },
-  "dependencies": {},
   "jest": {
     "preset": "ts-jest/presets/default-esm",
     "extensionsToTreatAsEsm": [
