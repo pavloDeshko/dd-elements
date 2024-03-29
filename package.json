@@ -17,7 +17,7 @@
   "scripts": {
     "test": "npm run build && jest test.ts",
     "build": "tsc",
-    "docs": "doxdox './lib/index.js' --layout markdown --output API.md",
+    "docs": "doxdox lib/index.js --renderer markdown --output API.md",
     "size": "size-limit",
     "test:legacy": "jest ./legacy/test.js",
     "prepare": "husky install",
